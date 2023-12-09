@@ -11,7 +11,7 @@ from selectors.first_team_current_form_selectors import *
 from selectors.next_game_info_selectors import *
 from selectors.odd_even_stats_selectors import *
 from selectors.head2head_selectors import *
-
+import argparse
 
 agents = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36",
@@ -33,13 +33,17 @@ def config_driver():
         "excludeSwitches", ["enable-logging"])
     chrome_options.add_argument("--headless")
     driver = webdriver.Chrome(options=chrome_options)
-    # driver.set_page_load_timeout(15)
+    driver.set_page_load_timeout(30)
 
     return driver
 
 
-def get_url(starter_url: str, id: int) -> str:
-    return f"{starter_url}{id}"
+def get_match_url(id: int) -> str:
+    return f"https://www.futebolscore.com/match/h2h-{id}"
+
+
+def get_odds_url(id: str) -> str:
+    return f"https://www.futebolscore.com/oddscomp/{id}"
 
 
 def get_data(url: str) -> dict:
@@ -81,6 +85,7 @@ def get_match_general_info(driver: webdriver.Chrome) -> dict | None:
             By.CSS_SELECTOR, first_team_name_selector).text.strip()
         general_info['second_team_name'] = driver.find_element(
             By.CSS_SELECTOR, second_team_name_selector).text.strip()
+
         general_info['league_name'] = driver.find_element(
             By.CSS_SELECTOR, league_name_selector).text.strip()
         general_info['date_time'] = driver.find_element(
@@ -93,8 +98,6 @@ def get_match_general_info(driver: webdriver.Chrome) -> dict | None:
 
         general_info['game_state'] = driver.find_element(
             By.CSS_SELECTOR, game_state_selector).text.strip()
-
-        # TODO: handle half times
 
         return general_info
     except Exception as e:
@@ -133,12 +136,12 @@ def get_first_team_current_form_stats(driver: webdriver.Chrome) -> dict | None:
 
         first_team_stats['first_team_at_home_scoring_average'] = float(driver.find_element(
             By.CSS_SELECTOR, first_team_at_home_scoring_average_selector).text.strip())
+
+        return first_team_stats
     except NoSuchElementException as e:
         print(
             f"Error locating first team current form section. Returned None.\n{e}")
         return None
-
-    return first_team_stats
 
 
 def get_second_team_current_form_stats(driver: webdriver.Chrome) -> dict | None:
@@ -173,12 +176,11 @@ def get_second_team_current_form_stats(driver: webdriver.Chrome) -> dict | None:
         second_team_stats['second_team_away_scoring_average'] = float(driver.find_element(
             By.CSS_SELECTOR, second_team_away_scoring_average_selector).text.strip())
 
+        return second_team_stats
     except NoSuchElementException as e:
         print(
-            "Error locating second team current form stats table. Returned empty dictionary", e)
-        return {}
-
-    return second_team_stats
+            f"Error locating second team current form section. Returned None.\n{e}")
+        return None
 
 
 def get_next_game_info(driver: webdriver.Chrome) -> dict | None:
@@ -189,6 +191,7 @@ def get_next_game_info(driver: webdriver.Chrome) -> dict | None:
             By.CSS_SELECTOR, first_team_days_until_next_game_selector).text.strip()
         next_game_info['second_team_days_until_next_game'] = driver.find_element(
             By.CSS_SELECTOR, second_team_days_until_next_game_selector).text.strip()
+
         next_game_info['first_team_next_game_location'] = driver.find_element(
             By.CSS_SELECTOR, first_team_next_game_location_selector).text.strip()
         next_game_info['second_team_next_game_location'] = driver.find_element(
@@ -197,8 +200,8 @@ def get_next_game_info(driver: webdriver.Chrome) -> dict | None:
         return next_game_info
         # TODO: handle word "dias" in days strings
     except NoSuchElementException as e:
-        print("Error locating the info about the next game. Returned empty dict.")
-        return {}
+        print(f"Error locating next-game info section:\n{e}\nReturned None.")
+        return None
 
 
 def get_odd_even_stats(driver: webdriver.Chrome) -> dict | None:
@@ -226,8 +229,8 @@ def get_odd_even_stats(driver: webdriver.Chrome) -> dict | None:
 
         return odd_even_stats
     except NoSuchElementException as e:
-        print(f"Error odd even {e}. Returned empty dict")
-        return {}
+        print(f"Error locating odd-even section:\n{e}\nReturned None.")
+        return None
 
 
 def get_h2h_stats(driver: webdriver.Chrome) -> dict | None:
@@ -266,15 +269,32 @@ def get_h2h_stats(driver: webdriver.Chrome) -> dict | None:
 
         return h2h_stats
     except NoSuchElementException as e:
-        print(f"Error h2h {e}. Returned empty object")
-        return {}
+        print(f"Error locating h2h section:\n{e}\nReturned None")
+        return None
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Scrape match statistics or odds")
+    parser.add_argument("start_id", type=int,
+                        help="Lowest match id to be scraped")
+    parser.add_argument("end_id", type=int,
+                        help="Highest match id to be scraped")
+    parser.add_argument("-o",
+                        "--odds", action="store_true", help="Flag for scraping odds. Default is match.")
+    args = parser.parse_args()
+
+    return args
 
 
 def main():
 
-    start_id = 2424424
-    end_id = 2424425
-    starter_url = "https://www.futebolscore.com/match/h2h-"
+    args = parse_args()
+
+    start_id = args.start_id
+    end_id = args.end_id
+
+    print(args)
 
     data_list = []
 
@@ -286,14 +306,15 @@ def main():
         print(f"Fetching url with id={id} ...")
 
         try:
-            id_dict = {"id": id}
-            data = get_data(get_url(starter_url, id))
+            data = get_data(get_match_url(id))
+            data.update({"id": id})
             data_list.append(data)
             print(f"Page with id={id} success !")
         except Exception as e:
             print(f"Error getting data from match {id},\n{e}")
         finally:
-            id += 1
+            # for testing purpose, later will be changed to 1
+            id += 25798
 
     df = pd.DataFrame(data_list)
     df.to_csv(f"./data/data_{start_id}_{end_id}.csv", index=False)
