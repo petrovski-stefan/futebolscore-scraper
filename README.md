@@ -2,7 +2,7 @@
 
 Script for scraping football statistics from Futebolscore (Data science course homework assignment)
 
-## Instalation
+## Installation
 
 `pip install -r requirements.txt`
 
