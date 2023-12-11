@@ -12,6 +12,11 @@ from selectors.next_game_info_selectors import *
 from selectors.odd_even_stats_selectors import *
 from selectors.head2head_selectors import *
 import argparse
+import os
+import concurrent.futures
+import threading
+
+lock = threading.Lock()
 
 agents = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36",
@@ -40,6 +45,8 @@ def config_driver():
 
 def get_match_url(id: int) -> str:
     return f"https://www.futebolscore.com/match/h2h-{id}"
+
+# Work in progress (odds section)
 
 
 def get_odds_url(id: str) -> str:
@@ -198,7 +205,7 @@ def get_next_game_info(driver: webdriver.Chrome) -> dict | None:
             By.CSS_SELECTOR, second_team_next_game_location_selector).text.strip()
 
         return next_game_info
-        # TODO: handle word "dias" in days strings
+
     except NoSuchElementException as e:
         print(f"Error locating next-game info section:\n{e}\nReturned None.")
         return None
@@ -280,15 +287,42 @@ def parse_args() -> argparse.Namespace:
                         help="Lowest match id to be scraped")
     parser.add_argument("end_id", type=int,
                         help="Highest match id to be scraped")
-    parser.add_argument("-o",
-                        "--odds", action="store_true", help="Flag for scraping odds. Default is match.")
+    # Work in progress
+    # parser.add_argument("-o",
+    #                     "--odds", action="store_true", help="Flag for scraping odds. Default is match.")
     args = parser.parse_args()
 
     return args
 
 
-def main():
+def fetch_and_save_data(id: int, file_path: str):
+    try:
+        delay = random.uniform(2, 7)
+        time.sleep(delay)
 
+        print(f"Fetching url with id={id} ...")
+
+        data = get_data(get_match_url(id))
+        data.update({"id": id})
+
+        with lock:
+            if os.path.exists(file_path):
+                old_df = pd.read_csv(file_path)
+                new_df = pd.DataFrame([data])
+                updated_df = pd.concat(
+                    [old_df, new_df], axis=0, ignore_index=True)
+                updated_df.to_csv(file_path, index=False)
+            else:
+                new_df = pd.DataFrame([data])
+                new_df.to_csv(file_path, index=False)
+
+        print(f"Page with id={id} success !")
+    except Exception as e:
+        print(f"Error getting data from match {id},\n{e}")
+
+
+def main():
+    start = time.time()
     args = parse_args()
 
     start_id = args.start_id
@@ -296,28 +330,15 @@ def main():
 
     print(args)
 
-    data_list = []
+    file_path = "data/data.csv"
+    ids = range(start_id, end_id+1)
 
-    id = start_id
-    while id <= end_id:
-        delay = random.uniform(1, 4)
-        time.sleep(delay)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+        executor.map(lambda id: fetch_and_save_data(id, file_path), ids)
 
-        print(f"Fetching url with id={id} ...")
-
-        try:
-            data = get_data(get_match_url(id))
-            data.update({"id": id})
-            data_list.append(data)
-            print(f"Page with id={id} success !")
-        except Exception as e:
-            print(f"Error getting data from match {id},\n{e}")
-        finally:
-            # for testing purpose, later will be changed to 1
-            id += 25798
-
-    df = pd.DataFrame(data_list)
-    df.to_csv(f"./data/data_{start_id}_{end_id}.csv", index=False)
+    print(f"\nFinished in: {time.time() -
+          start} seconds / {(time.time()-start)/60} minutes")
+    print(f"Scraped from {start_id} to {end_id}")
 
 
 if __name__ == "__main__":
