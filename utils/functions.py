@@ -1,6 +1,9 @@
 from datetime import datetime
+from selenium import webdriver
 from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.common.by import By
 import random
+import time
 
 
 def calculate_days_difference(last_game_date: str, date_time: str) -> int:
@@ -37,3 +40,16 @@ def get_team_last_game_location(web_element: WebElement, team_name: str) -> str:
 
 def get_random_agent(agents: list[str]) -> str:
     return agents[random.randint(0, len(agents)-1)]
+
+
+def find_element_by_css(driver, selector: str) -> WebElement:
+    return driver.find_element(By.CSS_SELECTOR, selector)
+
+
+def find_element_text(driver: webdriver.Chrome, selector: str) -> str:
+    return find_element_by_css(driver, selector).text.strip()
+
+
+def click_element(driver: webdriver.Chrome, selector: str) -> None:
+    find_element_by_css(driver, selector).click()
+    time.sleep(0.25)
