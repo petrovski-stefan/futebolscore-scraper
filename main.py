@@ -17,9 +17,6 @@ from utils.functions import calculate_days_difference, get_team_next_game_locati
 from utils.constants import agents
 
 
-lock = threading.Lock()
-
-
 def config_driver():
     chrome_options = webdriver.ChromeOptions()
     agent = get_random_agent(agents)
@@ -216,7 +213,7 @@ def parse_args() -> argparse.Namespace:
     return args
 
 
-def fetch_and_save_data(id: int, file_path: str):
+def fetch_and_save_data(id: int, file_path: str, lock: threading.Lock):
     try:
         delay = random.uniform(2, 7)
         time.sleep(delay)
@@ -253,8 +250,10 @@ def main():
     file_path = "data/data.csv"
     ids = range(start_id, end_id+1)
 
+    lock = threading.Lock()
+
     with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
-        executor.map(lambda id: fetch_and_save_data(id, file_path), ids)
+        executor.map(lambda id: fetch_and_save_data(id, file_path, lock), ids)
 
     print(f"\nFinished in: {time.time() -
           start} seconds / {(time.time()-start)/60} minutes")
