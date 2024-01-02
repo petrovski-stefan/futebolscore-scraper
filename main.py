@@ -208,6 +208,9 @@ def parse_args() -> argparse.Namespace:
                         help="Lowest match id to be scraped")
     parser.add_argument("end_id", type=int,
                         help="Highest match id to be scraped")
+
+    parser.add_argument("-f", default="data.csv", help="Output file path")
+
     args = parser.parse_args()
 
     return args
@@ -244,10 +247,8 @@ def main():
 
     start_id = args.start_id
     end_id = args.end_id
+    file_path = args.f
 
-    print(args)
-
-    file_path = "data/data.csv"
     ids = range(start_id, end_id+1)
 
     lock = threading.Lock()
