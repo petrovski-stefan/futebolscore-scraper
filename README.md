@@ -18,6 +18,7 @@ Script for scraping football statistics from Futebolscore
 2. `end_id` - highest match ID to be scraped (read more in the IDs section)
 3. `-f` - file path where the output file will be saved (optional)
    - Make sure that all specified subdirectories in the file path exist.
+4. `-t` - how many threads to use (optional)
 
 ### IDs:
 

@@ -210,6 +210,8 @@ def parse_args() -> argparse.Namespace:
                         help="Highest match id to be scraped")
 
     parser.add_argument("-f", default="data.csv", help="Output file path")
+    parser.add_argument("-t", type=int, default=4,
+                        help="How many threads to use")
 
     args = parser.parse_args()
 
@@ -248,12 +250,13 @@ def main():
     start_id = args.start_id
     end_id = args.end_id
     file_path = args.f
+    num_threads = args.t
 
     ids = range(start_id, end_id+1)
 
     lock = threading.Lock()
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=num_threads) as executor:
         executor.map(lambda id: fetch_and_save_data(id, file_path, lock), ids)
 
     print(f"\nFinished in: {time.time() -
