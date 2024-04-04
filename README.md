@@ -8,17 +8,20 @@ Script for scraping football statistics from Futebolscore
 
 ## Running
 
-`python main.py <start_id> <end_id> <file_path>`
+`python main.py <arguments>`
 
 - For help, run: `python main.py -h`
 
 ### Arguments:
 
-1. `start_id` - lowest match ID to be scraped (read more in the IDs section)
-2. `end_id` - highest match ID to be scraped (read more in the IDs section)
-3. `-f` - file path where the output file will be saved (optional)
-   - Make sure that all specified subdirectories in the file path exist.
-4. `-t` - how many threads to use (optional)
+1. `-s` - lowest match ID to be scraped (read more in the IDs section)
+2. `-e` - highest match ID to be scraped (read more in the IDs section)
+3. `-f` - file path where the output file will be saved (default is `./data.csv`)
+   - Make sure that all specified subdirectories in the file path exist
+4. `-t` - how many threads to use
+5. `-d` - scrape only today's matches without manually passing IDs (`flag`)
+
+The arguments `-d` or both `-s` and `-e` are required.
 
 ### IDs:
 
@@ -26,21 +29,13 @@ IDs are 7-digit numbers where the first 2 digits represent in what year the matc
 
 - Example: The match with ID 2321902 was played on 17-06-2023.
 
-### _Note:_ The current implementation of the scraper supports only scraping finished matches. Attempting to scrape scheduled matches (for the future) will not result in an error, the scraper will just skip them, thanks to the error handling.
-
 ### Features
 
 Here is a list of this project's features:
 
-- web scraping using Selenium
-- concurrency
+- web scraping daily or history matches
+- using selenium web driver to interact with the page
+- concurrency and synchronization using a lock
 - saving scraped data to a csv file using pandas library
 - command line argument parsing
 - user agent rotation
-
-Planned for the future:
-
-- change/remove passing ID range as command line arguments
-  - use this [tool's](https://github.com/stefanpetrovski1/futebolscore-matches-id-extractor) output to prevent scraping random/unwanted matches
-- save scraped data in a SQL database (most likely postgreSQL)
-- create an API (most likely fastapi)
