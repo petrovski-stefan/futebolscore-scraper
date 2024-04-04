@@ -7,3 +7,5 @@ agents = [
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.1 Safari/605.1.15",
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.1 Safari/605.1.15"
 ]
+
+DAILY_MATCHES_IDS_URL = 'https://www.futebolscore.com/ajax/SoccerAjax?type=6&timezone=1'
