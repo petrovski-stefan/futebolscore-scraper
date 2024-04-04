@@ -1,2 +1,7 @@
 selenium
 pandas
+pandas-stubs
+mypy
+requests
+types-requests
+
