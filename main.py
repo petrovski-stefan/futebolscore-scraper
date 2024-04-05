@@ -283,7 +283,10 @@ def main():
     lock = threading.Lock()
 
     if is_daily and start_id is None and end_id is None:
-        ids = get_daily_matches_ids()[:10]
+        try:
+            ids = get_daily_matches_ids()
+        except Exception as e:
+            print(e)
     elif start_id and end_id and start_id < end_id and is_daily is False:
         ids = range(start_id, end_id+1)
     else:
