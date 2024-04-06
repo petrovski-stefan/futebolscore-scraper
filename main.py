@@ -1,5 +1,4 @@
 from selenium import webdriver
-from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 from selectors.current_form_averages_selectors import *
 from selectors.general_info_selectors import *
@@ -12,8 +11,9 @@ import argparse
 import os
 import concurrent.futures
 import threading
-from utils.functions import calculate_days_difference, get_team_next_game_location, get_team_last_game_location, \
-    get_random_agent, click_element, find_element_text, find_element_by_css
+from utils.functions import calculate_days_difference, get_team_next_game_location, \
+    get_team_last_game_location, get_random_agent, click_element, find_element_text, \
+    find_element_by_css
 from utils.constants import agents, DAILY_MATCHES_IDS_URL
 import requests
 import re
@@ -52,7 +52,8 @@ def get_data(url: str, is_match_todays: bool) -> dict:
             "Current match is from extra low league.")
 
     last_game_info = get_last_game_info(
-        driver, general_info['first_team_name'], general_info['second_team_name'], general_info['date_time'])
+        driver, general_info['first_team_name'], general_info['second_team_name'],
+        general_info['date_time'])
     next_game_info = get_next_game_info(driver)
     current_form_averages = get_current_form_averages(driver)
 
@@ -70,7 +71,7 @@ def get_data(url: str, is_match_todays: bool) -> dict:
     return data
 
 
-def get_match_general_info(driver: webdriver.Chrome, is_match_todays: bool) -> dict | None:
+def get_match_general_info(driver: webdriver.Chrome, is_match_todays: bool) -> dict | None:  # noqa
     general_info = {}
 
     try:
@@ -102,7 +103,7 @@ def get_match_general_info(driver: webdriver.Chrome, is_match_todays: bool) -> d
         return None
 
 
-def get_last_game_info(driver: webdriver.Chrome, first_team_name: str, second_team_name: str, date_time: str) -> dict | None:
+def get_last_game_info(driver: webdriver.Chrome, first_team_name: str, second_team_name: str, date_time: str) -> dict | None:  # noqa
     last_game_info = {}
     try:
         first_team_last_game_date = find_element_text(
@@ -116,9 +117,13 @@ def get_last_game_info(driver: webdriver.Chrome, first_team_name: str, second_te
             second_team_last_game_date, date_time)
 
         last_game_info['first_team_last_game_location'] = get_team_last_game_location(
-            find_element_by_css(driver, was_first_team_last_game_at_home_selector), first_team_name)
+            find_element_by_css(
+                driver, was_first_team_last_game_at_home_selector),
+            first_team_name)
         last_game_info['second_team_last_game_location'] = get_team_last_game_location(
-            find_element_by_css(driver, was_second_team_last_game_at_home_selector), second_team_name)
+            find_element_by_css(
+                driver, was_second_team_last_game_at_home_selector),
+            second_team_name)
 
         return last_game_info
     except NoSuchElementException as e:
@@ -288,7 +293,7 @@ def main():
         except Exception as e:
             print(e)
     elif start_id and end_id and start_id < end_id and is_daily is False:
-        ids = range(start_id, end_id+1)
+        ids = range(start_id, end_id + 1)
     else:
         print('Error entering the arguments. Try again!')
         return

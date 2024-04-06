@@ -1,3 +1,4 @@
+# flake8: noqa
 league_name_selector = '#fbheader > div:nth-child(1) > span.LName > span'
 date_time_selector = '#fbheader > div:nth-child(1) span.time'
 

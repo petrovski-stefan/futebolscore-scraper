@@ -1,3 +1,4 @@
+# flake8: noqa
 first_team_scoring_average_selector = '#dv_recent_stats .bar:nth-of-type(1) div.vote div:nth-of-type(1)'
 second_team_scoring_average_selector = '#dv_recent_stats .bar:nth-of-type(1) div.vote div:nth-of-type(3)'
 

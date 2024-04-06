@@ -1,3 +1,4 @@
+# flake8: noqa
 first_team_days_until_next_game_selector = '#dv_futer > div > div.home-div > ul > li:nth-child(1) > div.corteam > div.interval'
 second_team_days_until_next_game_selector = '#dv_futer > div > div.guest-div > ul > li:nth-child(1) > div.corteam > div.interval'
 

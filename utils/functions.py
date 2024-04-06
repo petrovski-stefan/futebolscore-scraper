@@ -39,7 +39,7 @@ def get_team_last_game_location(web_element: WebElement, team_name: str) -> str:
 
 
 def get_random_agent(agents: list[str]) -> str:
-    return agents[random.randint(0, len(agents)-1)]
+    return agents[random.randint(0, len(agents) - 1)]
 
 
 def find_element_by_css(driver, selector: str) -> WebElement:
