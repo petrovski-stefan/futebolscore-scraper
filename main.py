@@ -47,7 +47,7 @@ def get_data(url: str, is_match_todays: bool) -> dict:
 
     general_info = get_match_general_info(driver, is_match_todays)
 
-    if general_info == None:
+    if general_info is None:
         raise Exception(
             "Current match is from extra low league.")
 
@@ -57,7 +57,7 @@ def get_data(url: str, is_match_todays: bool) -> dict:
     next_game_info = get_next_game_info(driver)
     current_form_averages = get_current_form_averages(driver)
 
-    if last_game_info == None or next_game_info == None or current_form_averages == None:
+    if last_game_info is None or next_game_info is None or current_form_averages is None:
         raise Exception(
             "Current match is from extra low league.")
 
