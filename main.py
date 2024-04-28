@@ -17,6 +17,7 @@ from utils.functions import calculate_days_difference, get_team_next_game_locati
 from utils.constants import agents, DAILY_MATCHES_IDS_URL
 import requests
 import re
+from datetime import date
 
 
 def config_driver() -> webdriver.Chrome:
@@ -233,10 +234,21 @@ def parse_args() -> argparse.Namespace:
     return args
 
 
+def get_today_date_string() -> str:
+    today = date.today()
+    day = today.day
+    month = today.month
+    year = today.year
+
+    return f'{year}-{month}-{day}'
+
+
 def get_daily_matches_ids() -> list[str]:
     user_agent = get_random_agent(agents)
     headers = {'User-Agent': user_agent}
-    resp = requests.get(DAILY_MATCHES_IDS_URL, headers=headers)
+    today_date = get_today_date_string()
+    url = f"{DAILY_MATCHES_IDS_URL}&date={today_date}"
+    resp = requests.get(url=url, headers=headers)
 
     if resp.status_code != 200:
         raise Exception('Error fetching the daily matches API')
