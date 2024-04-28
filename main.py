@@ -19,7 +19,7 @@ import requests
 import re
 
 
-def config_driver():
+def config_driver() -> webdriver.Chrome:
     chrome_options = webdriver.ChromeOptions()
     agent = get_random_agent(agents)
     chrome_options.add_argument(f"--user-agent={agent}")
@@ -249,7 +249,7 @@ def get_daily_matches_ids() -> list[str]:
 
 
 def fetch_and_save_data(id: int, file_path: str, lock: threading.Lock,
-                        is_match_todays: bool):
+                        is_match_todays: bool) -> None:
     try:
         delay = random.uniform(2, 7)
         time.sleep(delay)
@@ -275,7 +275,7 @@ def fetch_and_save_data(id: int, file_path: str, lock: threading.Lock,
         print(f"Error getting data from match {id},\n{e}")
 
 
-def main():
+def main() -> None:
     start = time.time()
     args = parse_args()
 
