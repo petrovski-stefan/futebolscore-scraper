@@ -325,7 +325,7 @@ def fetch_and_save_data(
 
 
 def main() -> None:
-    start = time.time()
+    start_time = time.time()
     args = parse_args()
 
     start_id: int | None = args.s
@@ -351,9 +351,9 @@ def main() -> None:
     with concurrent.futures.ThreadPoolExecutor(max_workers=num_threads) as executor:
         executor.map(lambda id: fetch_and_save_data(id, file_path, lock, is_daily), ids)
 
-    print(
-        f"Finished in: {time.time() - start} seconds / {(time.time()-start)/60} minutes"
-    )
+    total_time = time.time() - start_time
+
+    print(f"Finished in: {total_time:.2f} seconds / {total_time/60:.2f} minutes")
 
 
 if __name__ == "__main__":
