@@ -84,7 +84,7 @@ def get_data(url: str, is_match_todays: bool) -> dict:
 
 def get_match_general_info(
     driver: webdriver.Chrome, is_match_todays: bool
-) -> dict | None:  # noqa
+) -> dict | None:
     general_info = {}
 
     try:
@@ -122,7 +122,7 @@ def get_last_game_info(
     first_team_name: str,
     second_team_name: str,
     date_time: str,
-) -> dict | None:  # noqa
+) -> dict | None:
     last_game_info = {}
     try:
         first_team_last_game_date = find_element_text(
@@ -290,7 +290,7 @@ def get_daily_matches_ids() -> list[str]:
     if resp.status_code != 200:
         raise Exception("Error fetching the daily matches API")
 
-    matches: list[str] = re.findall(r"A\[[0-9]{1,4}\]=\[[0-9]{7},", resp.text)
+    matches: list[str] = re.findall(r"A\[\d{1,4}\]=\[\d{7},", resp.text)
 
     parsed = [m.split("=[")[1][:-1] for m in matches]
 
@@ -341,6 +341,7 @@ def main() -> None:
             ids = get_daily_matches_ids()
         except Exception as e:
             print(e)
+            return
     elif start_id and end_id and start_id < end_id and is_daily is False:
         ids = range(start_id, end_id + 1)
     else:

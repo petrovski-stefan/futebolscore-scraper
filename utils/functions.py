@@ -42,7 +42,7 @@ def get_random_agent(agents: list[str]) -> str:
     return agents[random.randint(0, len(agents) - 1)]
 
 
-def find_element_by_css(driver, selector: str) -> WebElement:
+def find_element_by_css(driver: webdriver.Chrome, selector: str) -> WebElement:
     return driver.find_element(By.CSS_SELECTOR, selector)
 
 
