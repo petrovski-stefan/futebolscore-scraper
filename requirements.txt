@@ -4,4 +4,7 @@ pandas-stubs
 mypy
 requests
 types-requests
+bs4
+types-beautifulsoup4
+python-dotenv
 

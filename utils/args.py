@@ -9,6 +9,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("-f", default="data.csv", help="Output file path")
     parser.add_argument("-t", type=int, default=4, help="How many threads to use")
 
+    pred_group = parser.add_mutually_exclusive_group()
+    pred_group.add_argument(
+        "--today", action="store_true", help="Generate predictions for today"
+    )
+    pred_group.add_argument(
+        "--tomorrow", action="store_true", help="Generate predictions for tomorrow"
+    )
+
     args = parser.parse_args()
 
     return args

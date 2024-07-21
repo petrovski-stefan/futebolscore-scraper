@@ -18,7 +18,7 @@ class Scraper:
     def __init__(self, driver: webdriver.Chrome) -> None:
         self.driver = driver
 
-    def get_match_general_info(self) -> dict | None:
+    def get_match_general_info(self, is_for_prediction: bool = False) -> dict | None:
         general_info = {}
 
         try:
@@ -36,15 +36,16 @@ class Scraper:
                 self.driver, date_time_selector
             )
 
-            general_info["first_team_goals_final_score"] = find_element_text(
-                self.driver, first_team_goals_scored_selector
-            )
-            general_info["second_team_goals_final_score"] = find_element_text(
-                self.driver, second_team_goals_scored_selector
-            )
-            general_info["game_state"] = find_element_text(
-                self.driver, game_state_selector
-            )
+            if not is_for_prediction:
+                general_info["first_team_goals_final_score"] = find_element_text(
+                    self.driver, first_team_goals_scored_selector
+                )
+                general_info["second_team_goals_final_score"] = find_element_text(
+                    self.driver, second_team_goals_scored_selector
+                )
+                general_info["game_state"] = find_element_text(
+                    self.driver, game_state_selector
+                )
 
             return general_info
         except Exception as e:
@@ -212,3 +213,6 @@ class Scraper:
         except NoSuchElementException as e:
             print(f"Error locating current form section:\n{e}")
             return None
+
+
+# TODO: add marbo's bs4 scraper methods in this class
